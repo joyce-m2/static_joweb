@@ -1,0 +1,41 @@
+/* Styles specific to the cart page */
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    background-color: white;
+}
+
+.cart-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    text-align: center;
+}
+
+.cart-container img {
+    width: 200px; /* Adjust size as needed */
+    height: auto;
+}
+
+.cart-container p {
+    font-size: 18px;
+    margin: 10px 0;
+}
+
+.cart-container button {
+    padding: 10px 20px;
+    font-size: 16px;
+    color: white;
+    background-color: #007BFF;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none; /* Remove underline for the link styled as a button */
+}
+
+.cart-container button:hover {
+    background-color: #0056b3;
+}

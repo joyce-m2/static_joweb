@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart</title>
+    <style>
+        body {
+    font-family: monospace;
+    background-color: #f4f4f4;
+    margin: 0;
+}
+        .cart-container {
+            padding: 20px;
+        }
+
+        .cart-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: #f9f9f9;
+            border: 10px solid #97bcf4;
+            border-radius: 8px;
+            position: relative;
+            width: 80%; /* Adjusted width to make it smaller */
+            max-width: 500px; /* Optional: set a maximum width */
+            margin-left: 0;
+            margin-right: auto;
+        }
+
+        .cart-item img {
+            width: 100px; /* Smaller image size */
+            height: auto;
+            margin-right: 15px;
+        }
+
+        .cart-item-details {
+            flex: 1;
+        }
+
+        .cart-item .quantity {
+            display: flex;
+            margin-right: 15px;
+        }
+
+        .quantity button {
+            background: #007BFF;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 8px;
+        }
+
+        .quantity input {
+            width: 35px;
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin: 0 5px;
+        }
+
+        .close-btn {
+            background: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 50%;
+            position: absolute;
+            top: -10px; /* Position above the box */
+            right: -10px; /* Position to the right of the box */
+            transform: translate(50%, -50%); /* Adjust for half-out positioning */
+        }
+
+        .checkout-btn {
+            font-family: monospace;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        .checkout-btn:hover {
+            background-color: #218838;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            background-color: #fff;
+            border-bottom: 1px solid #ccc;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo-text {
+    font-size: 24px;
+    font-family: Papyrus, sans-serif;
+    text-transform: uppercase;
+    margin: 0;
+    text-align: left;
+}
+
+.logo-text p {
+    margin: 0;
+    line-height: 1.2;
+}
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .icons {
+            display: flex;
+            gap: 20px; /* Adjusted gap to make it more compact */
+        }
+
+        .icon {
+            width: 35px; /* Smaller width for the icon */
+            height: 35px; /* Smaller height for the icon */
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+
+        .icon:hover {
+            opacity: 0.7;
+        }
+
+        .divider {
+            border: 1px solid #ddd;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <div class="navbar">
+        <div class="logo">
+            <div class="logo-text">
+                <p>JoStyle</p>
+                <p>Trends</p>
+            </div>
+        </div>
+        <div class="icons">
+            <a href="cart.html">
+                <img src="shopping-bag.png" alt="Shopping Bag" class="icon" />
+            </a>
+        </div>
+    </div>
+    
+    <div class="cart-container">
+        <div id="cartItems">
+            <!-- Cart items will be dynamically added here -->
+        </div>
+        <hr class="divider">
+        <div id="deliveryFee"></div>
+        <div id="totalPrice"></div>
+        <button class="checkout-btn" onclick="window.location.href='order.html'">Checkout</button>
+    </div>
+
+    <script>
+        const cartItemsContainer = document.getElementById('cartItems');
+        const totalPriceElement = document.getElementById('totalPrice');
+        const deliveryFeeElement = document.getElementById('deliveryFee');
+
+        const deliveryFee = 50; // Delivery fee
+
+        function updateCart() {
+            cartItemsContainer.innerHTML = '';
+            let totalPrice = 0;
+
+            const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+
+            if (cartItems.length === 0) {
+                cartItemsContainer.innerHTML = '<p>No items in cart</p>';
+                totalPriceElement.textContent = '';
+                deliveryFeeElement.textContent = '';
+                return;
+            }
+
+            cartItems.forEach((item, index) => {
+                const itemElement = document.createElement('div');
+                itemElement.className = 'cart-item';
+
+                itemElement.innerHTML = `
+                    <img src="${item.image}" alt="${item.name}">
+                    <div class="cart-item-details">
+                        <p>${item.name}</p>
+                        <p>₹${item.price}</p>
+                        <div class="quantity">
+                            <button onclick="changeQuantity(${index}, -1)">-</button>
+                            <input type="number" value="${item.quantity}" min="1" readonly>
+                            <button onclick="changeQuantity(${index}, 1)">+</button>
+                        </div>
+                        <button class="close-btn" onclick="removeItem(${index})">x</button>
+                    </div>
+                `;
+
+                cartItemsContainer.appendChild(itemElement);
+                totalPrice += item.price * item.quantity;
+            });
+
+            const finalTotalPrice = totalPrice + deliveryFee;
+
+            deliveryFeeElement.textContent = `Delivery Fee: ₹${deliveryFee}`;
+            totalPriceElement.textContent = `Total Price: ₹${finalTotalPrice.toFixed(2)}`;
+        }
+
+        function changeQuantity(index, delta) {
+            const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+            cartItems[index].quantity += delta;
+            if (cartItems[index].quantity <= 0) cartItems[index].quantity = 1;
+            localStorage.setItem('cartItems', JSON.stringify(cartItems));
+            updateCart();
+        }
+
+        function removeItem(index) {
+            const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+            cartItems.splice(index, 1);
+            localStorage.setItem('cartItems', JSON.stringify(cartItems));
+            updateCart();
+        }
+
+        updateCart();
+    </script>
+</body>
+</html>

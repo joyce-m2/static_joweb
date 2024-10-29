@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thank You</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+        .navbar {
+    width: 100%; /* Full width */
+    padding: 10px 20px;
+    background-color: #fff;
+    border-bottom: 1px solid #ccc;
+    margin-left: 30px;
+    position: fixed; /* Fix the navbar at the top */
+    top: 0;
+    z-index: 1000;
+    text-align: left; /* Align logo to the left */
+}
+
+.logo-text {
+    font-size: 24px;
+    font-family: Papyrus, sans-serif;
+    text-transform: uppercase;
+    margin: 0;
+    line-height: 1.2;
+    text-align: left; /* Align text inside logo */
+}
+
+.logo-text p {
+    margin: 0;
+    line-height: 1.2;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+}
+
+        /* Video background styling */
+        video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+
+        .message-container {
+            background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent background */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 300px;
+            z-index: 2; /* Position content above video */
+        }
+
+        .message-container h2 {
+            margin-bottom: 20px;
+        }
+
+        .message-container button {
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .message-container button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo-text">
+            <p>JoStyle</p>
+            <p>Trends</p>
+        </div>
+    </div>
+    <!-- Video background -->
+    <video autoplay loop muted>
+        <source src="background-video.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
+    <div class="message-container">
+        <h2>Thank You, <span id="userName"></span>!</h2>
+        <p>Your order will be dispatched soon.</p>
+        <p><strong>ORDER ID:</strong> <span id="orderId"></span></p>
+        <p><strong>Products:</strong> <span id="products"></span></p>
+        <p><strong>Total Price Paid:</strong> ₹<span id="totalPrice"></span></p>
+        <p><strong>Products will be delivered to:</strong></p>
+        <p><span id="deliveryAddress"></span></p>
+        <p>Expected Delivery: <b>5 - 9 days</b></p>
+        <p><strong>Thank you for shopping with us!</strong></p>
+        <button onclick="goBack()">Back to Home</button>
+    </div>
+
+    <script>
+        function generateOrderId() {
+            return Math.floor(10000 + Math.random() * 90000); // Random 5-digit number
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const name = urlParams.get('name');
+        const products = urlParams.get('products');
+        const total = urlParams.get('total');
+        const address = urlParams.get('address');
+
+        document.getElementById('userName').innerText = name;
+        document.getElementById('orderId').innerText = generateOrderId();
+        document.getElementById('products').innerText = products;
+        document.getElementById('totalPrice').innerText = total;
+        document.getElementById('deliveryAddress').innerText = address;
+
+        function goBack() {
+            window.location.href = 'index.html';
+        }
+    </script>
+
+</body>
+</html>

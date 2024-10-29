@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Catalog</title>
+    <style>
+        body {
+            font-family: Georgia, 'Times New Roman', Times, serif;
+            margin: 0;
+            padding: 0;
+            background-color: rgb(242, 242, 242);
+        }
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            background-color: #fff;
+            border-bottom: 1px solid #ccc;
+            top: 0;
+            z-index: 1000;
+        }
+        .logo-text {
+            font-size: 24px;
+            font-family: Papyrus, sans-serif;
+            text-transform: uppercase;
+            margin: 0;
+            line-height: 1.2;
+    text-align: left; 
+        }
+        .logo-text p {
+            margin: 0;
+             line-height: 1.2;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+        .icons {
+            display: flex;
+            gap: 20px; /* Adjusted gap to make it more compact */
+        }
+        .icon {
+            width: 35px; /* Smaller width for the icon */
+            height: 35px; /* Smaller height for the icon */
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+        .icon:hover {
+            opacity: 0.7;
+        }
+
+        .container {
+            display: flex;
+        }
+        .sidebar {
+            width: 20%;
+            background-color: #f4f4f4;
+            padding: 10px;
+        }
+        .main-content {
+            width: 80%;
+            padding: 20px;
+        }
+        .search-bar {
+            margin-bottom: 20px;
+        }
+        .search-bar input[type="text"] {
+            width: 98%;
+            padding: 10px;
+            font-size: 16px;
+        }
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        .product-item {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            background-color: white;
+            position: relative;
+        }
+        .image-container {
+            position: relative;
+            width: 100%;
+            padding-top: 177.78%;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .image-container img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: opacity 0.3s ease;
+        }
+        .image-container img.hover-img {
+            opacity: 0;
+        }
+        .product-item:hover .image-container img.default-img {
+            opacity: 0;
+        }
+        .product-item:hover .image-container img.hover-img {
+            opacity: 1;
+        }
+        .product-item p {
+            margin: 10px 0;
+        }
+        .order-btn {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .order-btn:hover {
+            background-color: #218838;
+        }
+        .price-filter-container {
+            margin-bottom: 20px;
+        }
+        .price-inputs {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+        .price-inputs input {
+            width: 48%;
+            padding: 5px;
+            font-size: 16px;
+        }
+        .price-range {
+            width: 100%;
+        }
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .loading-message {
+            color: white;
+            font-size: 24px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .popup-message {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+            z-index: 1000;
+        }
+        .popup-message button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .popup-message button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- Navbar -->
+    <div class="navbar">
+        <div class="logo">
+            <div class="logo-text">
+                <p>JoStyle</p>
+                <p>Trends</p>
+            </div>
+        </div>
+        <div class="icons">
+            <a href="cart.html">
+                <img src="shopping-bag.png" alt="Shopping Bag" class="icon" />
+            </a>
+        </div>
+    </div>
+    
+    <!-- Main container with sidebar and content -->
+    <div class="container">
+        <!-- Sidebar with filters -->
+        <div class="sidebar">
+            <h2>Filters →</h2>
+
+            <!-- Price Filter -->
+            <div class="price-filter-container">
+                <h4>Price Filter</h4>
+                <input type="range" id="priceRange" class="price-range" min="0" max="5000" step="1">
+                <div class="price-inputs">
+                    <input type="number" id="minPrice" placeholder="Min Price" min="0" value="0">
+                    <input type="number" id="maxPrice" placeholder="Max Price" max="5000" value="5000">
+                </div>
+            </div>
+            <div>
+                <h4>Size</h4>
+                <label><input type="checkbox" value="women"> XXS</label><br>
+                <label><input type="checkbox" value="men"> XS</label><br>
+                <label><input type="checkbox" value="kids"> S</label><br>
+                <label><input type="checkbox" value="kids"> M</label><br>
+                <label><input type="checkbox" value="kids"> L</label><br>
+                <label><input type="checkbox" value="kids"> XL</label><br>
+                <label><input type="checkbox" value="kids"> XXL</label><br>
+            </div>
+        </div>
+        
+        <!-- Main content with search bar and product grid -->
+        <div class="main-content">
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Search for products...">
+            </div>
+            
+            <div class="product-grid" id="productGrid">
+                <!-- Example products, repeat this block for more products -->
+                <div class="product-item" data-name="Galaxy black full sleeves crop top" data-price="899">
+                    <div class="image-container">
+                        <img src="1a.jpg" alt="Product 1 Image" class="default-img">
+                        <img src="1b.jpg" alt="Product 1 Hover Image" class="hover-img">
+                    </div>
+                    <p>Galaxy black full sleeves crop top</p>
+                    <p>₹899</p>
+                    <button class="order-btn">Order Now</button>
+                </div>
+                <div class="product-item" data-name="Black tube top" data-price="599">
+                    <div class="image-container">
+                        <img src="2a.jpg" alt="Product 1 Image" class="default-img">
+                        <img src="2b.jpg" alt="Product 1 Hover Image" class="hover-img">
+                    </div>
+                    <p>Black tube top</p>
+                    <p>₹599</p>
+                    <button class="order-btn">Order Now</button>
+                </div>
+                <div class="product-item" data-name="Oversized Graphic Black T-Shirt" data-price="759">
+                    <div class="image-container">
+                        <img src="3a.jpg" alt="Product 1 Image" class="default-img">
+                        <img src="3b.jpg" alt="Product 1 Hover Image" class="hover-img">
+                    </div>
+                    <p>Oversized Graphic Black T-Shirt</p>
+                    <p>₹759</p>
+                    <button class="order-btn">Order Now</button>
+                </div>
+                <div class="product-item" data-name="Men's Formal Black Suit Combo" data-price="2150">
+                    <div class="image-container">
+                        <img src="4a.jpg" alt="Product 1 Image" class="default-img">
+                        <img src="4b.jpg" alt="Product 1 Hover Image" class="hover-img">
+                    </div>
+                    <p>Men's Formal Black Suit Combo</p>
+                    <p>₹2150</p>
+                    <button class="order-btn">Order Now</button>
+                </div>
+                <div class="product-item" data-name="Oversized Denim Faded Overalls" data-price="1350">
+                    <div class="image-container">
+                        <img src="5a.jpg" alt="Product 1 Image" class="default-img">
+                        <img src="5b.jpg" alt="Product 1 Hover Image" class="hover-img">
+                    </div>
+                    <p>Oversized Denim Faded Overalls</p>
+                    <p>₹1350</p>
+                    <button class="order-btn">Order Now</button>
+                </div>
+                <div class="product-item" data-name="Oversized White Button Shirt" data-price="850">
+                    <div class="image-container">
+                        <img src="6a.jpg" alt="Product 1 Image" class="default-img">
+                        <img src="6b.jpg" alt="Product 1 Hover Image" class="hover-img">
+                    </div>
+                    <p>Oversized White Button Shirt</p>
+                    <p>₹850</p>
+                    <button class="order-btn">Order Now</button>
+                </div>
+                <!-- Add more products here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-message">Loading...</div>
+    </div>
+
+    <!-- Popup message -->
+    <div class="popup-message" id="popupMessage">
+        <p>Product added to cart</p>
+        <button onclick="closePopup()">OK</button>
+    </div>
+
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        const productGrid = document.getElementById('productGrid');
+        const products = productGrid.getElementsByClassName('product-item');
+        const priceRange = document.getElementById('priceRange');
+        const minPriceInput = document.getElementById('minPrice');
+        const maxPriceInput = document.getElementById('maxPrice');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const popupMessage = document.getElementById('popupMessage');
+    
+        // Filter products based on search input and price range
+        function filterProducts() {
+            const filter = searchInput.value.toLowerCase();
+            const minPrice = parseFloat(minPriceInput.value) || 0;
+            const maxPrice = parseFloat(maxPriceInput.value) || 100;
+    
+            for (let i = 0; i < products.length; i++) {
+                const productName = products[i].getAttribute('data-name').toLowerCase();
+                const productPrice = parseFloat(products[i].getAttribute('data-price'));
+    
+                if (productName.includes(filter) && productPrice >= minPrice && productPrice <= maxPrice) {
+                    products[i].style.display = '';
+                } else {
+                    products[i].style.display = 'none';
+                }
+            }
+        }
+    
+        // Event listeners for filtering
+        searchInput.addEventListener('keyup', filterProducts);
+        priceRange.addEventListener('input', function() {
+            minPriceInput.value = 0;
+            maxPriceInput.value = priceRange.value;
+            filterProducts();
+        });
+        minPriceInput.addEventListener('input', filterProducts);
+        maxPriceInput.addEventListener('input', filterProducts);
+    
+        // Event listener for order buttons
+        const orderButtons = document.querySelectorAll('.order-btn');
+        orderButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const productItem = this.parentElement;
+                const productName = productItem.getAttribute('data-name');
+                const productPrice = productItem.getAttribute('data-price');
+                const productImage = productItem.querySelector('.default-img').src;
+    
+                let cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+                const existingItemIndex = cartItems.findIndex(item => item.name === productName);
+    
+                if (existingItemIndex > -1) {
+                    cartItems[existingItemIndex].quantity += 1;
+                } else {
+                    cartItems.push({
+                        name: productName,
+                        price: parseFloat(productPrice),
+                        image: productImage,
+                        quantity: 1
+                    });
+                }
+    
+                localStorage.setItem('cartItems', JSON.stringify(cartItems));
+    
+                loadingOverlay.style.display = 'flex';
+                setTimeout(() => {
+                    loadingOverlay.style.display = 'none';
+                    popupMessage.style.display = 'block';
+                    setTimeout(() => {
+                        popupMessage.style.display = 'none';
+                        window.location.href = 'cart.html';
+                    }, 2000);
+                }, 2000); // Simulating a 2-second loading time
+            });
+        });
+    
+        // Close popup message
+        function closePopup() {
+            popupMessage.style.display = 'none';
+        }
+    </script>
+    
+</body>
+</html>

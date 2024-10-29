@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        .navbar {
+    width: 100%; /* Full width */
+    padding: 10px 20px;
+    background-color: #fff;
+    border-bottom: 1px solid #ccc;
+    margin-left: 30px;
+    position: fixed; /* Fix the navbar at the top */
+    top: 0;
+    z-index: 1000;
+    text-align: left; /* Align logo to the left */
+}
+
+.logo-text {
+    font-size: 24px;
+    font-family: Papyrus, sans-serif;
+    text-transform: uppercase;
+    margin: 0;
+    line-height: 1.2;
+    text-align: left; /* Align text inside logo */
+}
+
+.logo-text p {
+    margin: 0;
+    line-height: 1.2;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+}
+
+
+        .form-container {
+            background-color: #fff;
+            padding: 60px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            margin-top: 120px; /* Adjusted for navbar space */
+        }
+
+        .form-container input[type="text"],
+        .form-container input[type="email"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .form-container button {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .form-container button:hover {
+            background-color: #218838;
+        }
+
+        .error {
+            color: red;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <div class="navbar">
+        <div class="logo-text">
+            <p>JoStyle</p>
+            <p>Trends</p>
+        </div>
+    </div>
+
+    <div class="form-container">
+        <h2>Checkout Form</h2>
+        <form id="checkoutForm" onsubmit="submitOrder(event)">
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name" placeholder="Enter your name">
+            <div id="nameError" class="error"></div>
+
+            <label for="phone">Phone</label>
+            <input type="text" id="phone" name="phone" placeholder="Enter your phone number">
+            <div id="phoneError" class="error"></div>
+
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="Enter your email">
+            <div id="emailError" class="error"></div>
+
+            <label for="address">Address</label>
+            <input type="text" id="address" name="address" placeholder="Enter your address">
+            <div id="addressError" class="error"></div>
+
+            <button type="submit">Place your order</button>
+        </form>
+    </div>
+
+    <script>
+        function validateForm() {
+            let isValid = true;
+            document.getElementById('nameError').innerText = '';
+            document.getElementById('phoneError').innerText = '';
+            document.getElementById('emailError').innerText = '';
+            document.getElementById('addressError').innerText = '';
+    
+            const name = document.getElementById('name').value;
+            const phone = document.getElementById('phone').value;
+            const email = document.getElementById('email').value;
+            const address = document.getElementById('address').value;
+    
+            if (!/^[A-Za-z\s]+$/.test(name)) {
+                document.getElementById('nameError').innerText = 'Enter a valid name';
+                isValid = false;
+            }
+    
+            if (!/^\d{10}$/.test(phone)) {
+                document.getElementById('phoneError').innerText = 'Enter a valid phone number';
+                isValid = false;
+            }
+    
+            if (!email) {
+                document.getElementById('emailError').innerText = 'Please enter a valid email';
+                isValid = false;
+            }
+    
+            if (!address) {
+                document.getElementById('addressError').innerText = 'Please enter your address';
+                isValid = false;
+            }
+    
+            return isValid;
+        }
+    
+        function submitOrder(event) {
+            event.preventDefault(); // Prevent form submission
+            if (validateForm()) {
+                const name = document.getElementById('name').value;
+                const phone = document.getElementById('phone').value;
+                const email = document.getElementById('email').value;
+                const address = document.getElementById('address').value;
+    
+                // Get cart details from localStorage
+                const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+                let cartItemNames = cartItems.map(item => item.name).join(', ');
+                let totalPrice = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    
+                const deliveryFee = 50;
+                totalPrice += deliveryFee;
+    
+                // Prepare data to be sent to Google Sheets
+                const postData = {
+                    productName: cartItemNames,
+                    quantity: cartItems.reduce((sum, item) => sum + item.quantity, 0),
+                    amountPaid: totalPrice.toFixed(2),
+                    name: name,
+                    phone: phone,
+                    email: email,
+                    address: address
+                };
+    
+                fetch('https://script.google.com/macros/s/AKfycbz-EARi1aHBzSP8aTKsfjEdiUmUG21cbgM9xDG4UeUJQq_OaYKDnRkS0iFeH1p8n7BIrg/exec', { // Replace with your Web App URL
+                    method: 'POST',
+                    contentType: 'application/json',
+                    body: JSON.stringify(postData)
+                }).then(response => {
+                    if (response.ok) {
+                        window.location.href = `thanks.html?name=${encodeURIComponent(name)}&address=${encodeURIComponent(address)}&products=${encodeURIComponent(cartItemNames)}&total=${encodeURIComponent(totalPrice.toFixed(2))}`;
+                    }
+                }).catch(error => console.error('Error:', error));
+            }
+        }
+    </script>
+    
+</body>
+</html>
